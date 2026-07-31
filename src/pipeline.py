@@ -12,13 +12,15 @@ def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
 
 
-def rag(question):
+def rag(question, chat_history=[]):
     llm = get_llm()
     vectorstore = get_vectorstore(k=4)
     prompt = rag_prompt
 
     chain = prompt | llm | StrOutputParser()
     context = format_docs(vectorstore.invoke(question))
-    response = chain.invoke({"question": question, "context": context})
+    response = chain.invoke(
+        {"question": question, "chat_history": chat_history, "context": context}
+    )
 
     return response
