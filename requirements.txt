@@ -1,0 +1,17 @@
+langchain == 1.3.14
+langchain-community
+langchain-text-splitters
+langchain-huggingface
+langchain-deepseek
+langchain-chroma
+
+pypdf
+sentence-transformers
+torch
+dotenv
+pydantic
+
+qdrant-client
+chromadb
+
+black
