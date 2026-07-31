@@ -41,9 +41,7 @@ def get_llm():
     api_key = os.getenv("DEEPSEEK_API_KEY")
     if not api_key:
         raise ValueError("DeepSeek api key is missing from environment")
-    
+
     return ChatDeepSeek(
-        model=config.LLM_MODEL, 
-        temperature=0, 
-        api_key=SecretStr(api_key)
+        model=config.LLM_MODEL, temperature=0, api_key=SecretStr(api_key)
     )
