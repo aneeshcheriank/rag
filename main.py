@@ -20,7 +20,7 @@ if __name__ == "__main__":
             break
 
         response = rag(question, chat_history)
-        print(response)
+        print(response.get("response"))
         print("===============================")
 
         chat_history.append(HumanMessage(content=question))
