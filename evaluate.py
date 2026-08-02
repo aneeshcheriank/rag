@@ -6,11 +6,12 @@ from ragas.metrics import (
     context_precision,
     context_recall,
     faithfulness,
-    answer_relevancy
+    answer_relevancy,
 )
 
 from src.pipeline import rag
 from src.model import get_llm, get_embedding_model
+
 
 def run_evaluation(output_filename="eval_results.csv"):
 
@@ -34,10 +35,7 @@ def run_evaluation(output_filename="eval_results.csv"):
         gt = item["answer"]
 
         # Execute the RAG pipeline
-        response = rag_chain.invoke(
-            {
-                "question": q,
-                "chat_history": [],
-                "context": ""
-            }
-        )
+        response = rag_chain.invoke({"question": q, "chat_history": [], "context": ""})
+
+        # Pull text contents of context documents retriced bz the chain
+        retrived_docs = [doc.page_content for doc in response.get]
