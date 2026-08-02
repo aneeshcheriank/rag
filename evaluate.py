@@ -1,7 +1,7 @@
 import json
 import pandas as pd
 from datasets import Dataset
-from ragas import evluate
+from ragas import evaluate
 from ragas.metrics import (
     context_precision,
     context_recall,
@@ -36,6 +36,45 @@ def run_evaluation(output_filename="eval_results.csv"):
 
         # Execute the RAG pipeline
         response = rag_chain.invoke({"question": q, "chat_history": [], "context": ""})
-
+        answers.append(response.get("response", ""))
+        
         # Pull text contents of context documents retriced bz the chain
-        retrived_docs = [doc.page_content for doc in response.get]
+        retrived_docs = [doc.page_content for doc in response.get("context", [])]
+        contexts.append(retrived_docs)
+        ground_truths.append(gt)
+
+    # Fromat as HuggingFace Dataset for evaluation
+    data_dict = {
+        "question": questions,
+        "answer": answers,
+        "context": contexts,
+        "ground_truth": ground_truths,
+    }
+    dataset = Dataset.from_dict(data_dict)
+
+    # Run Evaluation using LLM and Embeddings
+    llm = get_llm()
+    embedding_model = get_embedding_model()
+
+    print("📊 Evaluating Metrics...")
+    results = evaluate(
+        dataset = dataset,
+        metrics = [
+            context_precision,
+            context_recall,
+            faithfulness,
+            answer_relevancy
+        ],
+        llm = llm,
+        embedding_model = embedding_model
+    )
+
+    # Export Results
+    df = results.to_pandas()
+    df.to_csv(output_filename, index=False)
+    print(f"\n✅ Evaluation Completed! Results saved to {output_filename}")
+    print("\nMean Scores:")
+    print(df[["context_precision", "context_recall", "faithfulness", "answer_relevancy"]].mean())
+
+if __name__ == "__main__":
+    run_evaluation("baseline_vectorstore_results.csv")
