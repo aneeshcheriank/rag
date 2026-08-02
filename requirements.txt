@@ -5,6 +5,7 @@ langchain-text-splitters
 langchain-huggingface
 langchain-deepseek
 langchain-chroma
+langchain-google-vertexai # ragas dependency
 
 # other packages
 pypdf
