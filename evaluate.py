@@ -27,17 +27,17 @@ def run_evaluation(output_filename="eval_results.csv"):
     ground_truths = []
 
     # Get pipeline instance
-    rag_chain = rag()
+    rag_chain = rag
 
     print("🔍 Running RAG Pipeline on Evaluation Dataset...")
 
     # Collect predictions and contexts
     for idx, item in enumerate(eval_data):
         q = item["question"]
-        gt = item["answer"]
+        gt = item["ground_truth"]
 
         # Execute the RAG pipeline
-        response = rag_chain.invoke({"question": q, "chat_history": [], "context": ""})
+        response = rag_chain(question = q, chat_history = [])
         answers.append(response.get("response", ""))
         
         # Pull text contents of context documents retriced bz the chain
@@ -69,7 +69,7 @@ def run_evaluation(output_filename="eval_results.csv"):
             answer_relevancy
         ],
         llm = llm,
-        embedding_model = embedding_model
+        embeddings = embedding_model
     )
 
     # Export Results
