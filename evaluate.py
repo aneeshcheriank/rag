@@ -8,9 +8,11 @@ from ragas.metrics import (
     faithfulness,
     answer_relevancy,
 )
+from ragas.llms import LangchainLLMWrapper
+from ragas.embeddings import LangchainEmbeddingsWrapper
 
 from src.pipeline import rag
-from src.model import get_llm, get_embedding_model
+from src.model import get_llm, get_embeddings
 
 
 def run_evaluation(output_filename="eval_results.csv"):
@@ -39,11 +41,12 @@ def run_evaluation(output_filename="eval_results.csv"):
         answers.append(response.get("response", ""))
         
         # Pull text contents of context documents retriced bz the chain
+        questions.append(q)
         retrived_docs = [doc.page_content for doc in response.get("context", [])]
         contexts.append(retrived_docs)
         ground_truths.append(gt)
 
-    # Fromat as HuggingFace Dataset for evaluation
+    # Format as HuggingFace Dataset for evaluation
     data_dict = {
         "question": questions,
         "answer": answers,
@@ -53,8 +56,8 @@ def run_evaluation(output_filename="eval_results.csv"):
     dataset = Dataset.from_dict(data_dict)
 
     # Run Evaluation using LLM and Embeddings
-    llm = get_llm()
-    embedding_model = get_embedding_model()
+    llm = LangchainLLMWrapper(get_llm())
+    embedding_model = LangchainEmbeddingsWrapper(get_embeddings())
 
     print("📊 Evaluating Metrics...")
     results = evaluate(
