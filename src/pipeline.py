@@ -18,9 +18,18 @@ def rag(question, chat_history=[]):
     prompt = rag_prompt
 
     chain = prompt | llm | StrOutputParser()
-    context = format_docs(vectorstore.invoke(question))
+    context = vectorstore.invoke(question)
+    formated_context = format_docs(context)
+
     response = chain.invoke(
-        {"question": question, "chat_history": chat_history, "context": context}
+        {
+            "question": question,
+            "chat_history": chat_history,
+            "context": formated_context,
+        }
     )
 
-    return response
+    return {
+        "response": response,
+        "context": context,
+    }
