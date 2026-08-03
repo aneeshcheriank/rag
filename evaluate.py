@@ -2,7 +2,7 @@ import json
 import pandas as pd
 from datasets import Dataset
 from ragas import evaluate
-from ragas.metrics import (
+from ragas.metrics.collections import (
     context_precision,
     context_recall,
     faithfulness,
@@ -44,7 +44,8 @@ def run_evaluation(output_filename="eval_results.csv"):
         questions.append(q)
         retrived_docs = [doc.page_content for doc in response.get("context", [])]
         contexts.append(retrived_docs)
-        ground_truths.append(gt)
+        # Convert structured ground_truth dict to string (Ragas v1.0+ requires string references)
+        ground_truths.append(json.dumps(gt) if isinstance(gt, dict) else gt)
 
     # Format as HuggingFace Dataset for evaluation
     data_dict = {
@@ -63,10 +64,10 @@ def run_evaluation(output_filename="eval_results.csv"):
     results = evaluate(
         dataset = dataset,
         metrics = [
-            context_precision,
-            context_recall,
-            faithfulness,
-            answer_relevancy
+            context_precision(),
+            context_recall(),
+            faithfulness(),
+            answer_relevancy()
         ],
         llm = llm,
         embeddings = embedding_model
