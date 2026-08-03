@@ -22,10 +22,10 @@ def split_doc(document):
     return texts
 
 
-def process_pdf(pdf_path):
+def process_pdf(pdf_path, clear_existing=True):
     doc = load_pdf(pdf_path)
     texts = split_doc(doc)
 
-    vector_db = vector_store(texts, clear_existing=True)
+    vector_db = vector_store(texts, clear_existing=clear_existing)
 
     return vector_db
