@@ -2,12 +2,10 @@ import json
 import pandas as pd
 from datasets import Dataset
 from ragas import evaluate
-from ragas.metrics.collections import (
-    context_precision,
-    context_recall,
-    faithfulness,
-    answer_relevancy,
-)
+from ragas.metrics.collections.context_precision import ContextPrecision
+from ragas.metrics.collections.context_recall import ContextRecall
+from ragas.metrics.collections.faithfulness import Faithfulness
+from ragas.metrics.collections.answer_relevancy import AnswerRelevancy
 from ragas.llms import LangchainLLMWrapper
 from ragas.embeddings import LangchainEmbeddingsWrapper
 
@@ -64,10 +62,10 @@ def run_evaluation(output_filename="eval_results.csv"):
     results = evaluate(
         dataset = dataset,
         metrics = [
-            context_precision(),
-            context_recall(),
-            faithfulness(),
-            answer_relevancy()
+            ContextPrecision(),
+            ContextRecall(),
+            Faithfulness(),
+            AnswerRelevancy()
         ],
         llm = llm,
         embeddings = embedding_model
