@@ -24,7 +24,15 @@ if __name__ == "__main__":
         print("===============================")
 
         chat_history.append(HumanMessage(content=question))
-        chat_history.append(AIMessage(content=response))
+
+        # incase the response is a dict, we need to extract the answer from it
+        if isinstance(response, dict):
+            answer_str = (
+                response.get("response") or response.get("answer") or str(response)
+            )
+        else:
+            answer_str = response
+        chat_history.append(AIMessage(content=answer_str))
 
         if len(chat_history) >= 10:
             chat_history = chat_history[:10]
