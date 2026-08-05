@@ -176,6 +176,9 @@ def report(results_df: pd.DataFrame):
     print("\n📊  Mean Scores")
     print(results_df[available].mean().to_string())
 
+    print("\n📊  Median Scores")
+    print(results_df[available].median().to_string())
+
 
 # ---------------------------------------------------------------------------
 # Main entry-point
