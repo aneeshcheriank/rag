@@ -47,6 +47,7 @@ OUTPUT_PATH = "baseline_vectorstore_results.csv"
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def load_eval_data(path: str) -> list[dict]:
     """Load the evaluation dataset from a JSON file."""
     with open(path) as f:
@@ -154,8 +155,8 @@ def build_evaluator_embeddings():
     ``embed_texts()``.  We add the missing methods as aliases.
     """
     emb = HuggingFaceEmbeddings(model=config.EMBEDDING_MODEL)
-    emb.embed_query = emb.embed_text        # old API → new API
-    emb.embed_documents = emb.embed_texts   # old API → new API
+    emb.embed_query = emb.embed_text  # old API → new API
+    emb.embed_documents = emb.embed_texts  # old API → new API
     return emb
 
 
@@ -179,6 +180,7 @@ def report(results_df: pd.DataFrame):
 # ---------------------------------------------------------------------------
 # Main entry-point
 # ---------------------------------------------------------------------------
+
 
 def run_evaluation():
     # 1. Load data
