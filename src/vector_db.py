@@ -3,7 +3,12 @@ from langchain_community.storage import RedisStore
 from langchain_classic.retrievers import ParentDocumentRetriever
 from langchain_classic.storage import create_kv_docstore
 
-from src.config import CHROMA_STORAGE, REDIS_URL, REDIS_NAMESPACE
+from src.config import (
+    CHROMA_STORAGE, 
+    REDIS_URL, 
+    REDIS_NAMESPACE,
+    COLLECTION_NAME
+)
 from src.model import get_embeddings
 from src.data_process import get_splitter
 
@@ -30,7 +35,7 @@ def parent_document_store(docs, clear_existing=True):
     embeddings = get_embeddings()
     # vectorstore
     vectorstore = Chroma(
-        collection_name="child_docs",
+        collection_name=COLLECTION_NAME,
         persist_directory=CHROMA_STORAGE,
         embedding_function=embeddings,
     )
