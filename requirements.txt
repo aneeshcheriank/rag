@@ -6,7 +6,7 @@ langchain-huggingface
 langchain-deepseek
 langchain-chroma
 langchain-google-vertexai # ragas dependency
-langchain-redis
+lanchain-redis
 
 # other packages
 pypdf
