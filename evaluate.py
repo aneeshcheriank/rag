@@ -75,7 +75,7 @@ def run_pipeline_on_all(items: list[dict]) -> tuple[list, list, list, list]:
         question = item["question"]
         gt = item["ground_truth"]
 
-        result = rag(question=question, chat_history=[])
+        result = rag(question=question, chat_history=[], k=config.TOP_K)
 
         user_inputs.append(question)
         responses.append(result["response"])
@@ -109,7 +109,7 @@ def build_dataset(
 def build_evaluator_llm():
     """Return a Ragas-compatible LLM backed by DeepSeek.
 
-    Three workarounds for Ragas 0.4.x bugs:
+    Four workarounds for Ragas 0.4.x + DeepSeek quirks:
 
     1. Ragas' ``_patch_client_for_provider`` uses the manual
        ``instructor.Instructor(client, create=client.messages.create)``
@@ -121,7 +121,12 @@ def build_evaluator_llm():
        ``client.messages.create`` (Anthropic API shape) — DeepSeek uses the
        OpenAI-compatible ``client.chat.completions.create``.
 
-    3. DeepSeek may need a higher ``max_tokens`` budget for structured
+    3. DeepSeek doesn't support the native ``n`` parameter for multiple
+       completions.  Ragas requests ``n=3`` for metrics like
+       AnswerRelevancy.  We monkey-patch ``chat.completions.create`` to
+       emulate it via sequential calls.
+
+    4. DeepSeek may need a higher ``max_tokens`` budget for structured
        output generation.
     """
     import ragas.llms.base as _ragas_base
@@ -131,6 +136,27 @@ def build_evaluator_llm():
         raise ValueError("DEEPSEEK_API_KEY not set — cannot create evaluator LLM.")
 
     client = OpenAI(api_key=api_key, base_url="https://api.deepseek.com/v1")
+
+    # ------------------------------------------------------------------
+    # DeepSeek doesn't support the native ``n`` parameter (multiple
+    # completions in a single request).  Ragas requests ``n=3`` for
+    # metrics like AnswerRelevancy.  We emulate it by making sequential
+    # calls and merging the choices into a single response object.
+    # ------------------------------------------------------------------
+    _raw_chat_create = client.chat.completions.create
+
+    def _create_with_n(**kwargs):
+        n = kwargs.pop("n", 1)
+        if n <= 1:
+            return _raw_chat_create(**kwargs)
+        response = _raw_chat_create(**kwargs)
+        extra_choices = [
+            _raw_chat_create(**kwargs).choices[0] for _ in range(n - 1)
+        ]
+        response.choices = [response.choices[0]] + extra_choices
+        return response
+
+    client.chat.completions.create = _create_with_n
 
     # Pre-patch the client properly (what _patch_client_for_provider *should* do).
     patched = instructor.from_openai(client, mode=instructor.Mode.JSON)
@@ -142,7 +168,7 @@ def build_evaluator_llm():
         config.LLM_MODEL,
         provider="deepseek",
         client=patched,
-        max_tokens=2048,
+        max_tokens=4096,
     )
 
 
