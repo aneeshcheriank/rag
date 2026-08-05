@@ -3,8 +3,6 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 import logging
 
-from src.vector_db import vector_store
-
 logger = logging.getLogger(__name__)
 
 
@@ -15,17 +13,16 @@ def load_pdf(pdf_path):
     return doc
 
 
-def split_doc(document):
-    splitter = RecursiveCharacterTextSplitter(chunk_size=250, chunk_overlap=50)
-    texts = splitter.split_documents(document)
-    logger.info(f"chunked docs, lenght: {len(texts)}")
-    return texts
+def get_splitter():
+    child_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=250, 
+        chunk_overlap=50
+    )
 
+    parent_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=2000, 
+        chunk_overlap=200,
+        separators=["\n\n", "\n", " ", ""]
+    )
 
-def process_pdf(pdf_path, clear_existing=True):
-    doc = load_pdf(pdf_path)
-    texts = split_doc(doc)
-
-    vector_db = vector_store(texts, clear_existing=clear_existing)
-
-    return vector_db
+    return child_splitter, parent_splitter
