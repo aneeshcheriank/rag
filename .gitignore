@@ -225,3 +225,6 @@ models/
 
 # dbs
 chroma_db/
+
+# explorations
+explorations/
