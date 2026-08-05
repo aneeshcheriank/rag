@@ -11,3 +11,13 @@ def load_pdf(pdf_path):
     doc = loader.load()
     logger.info(f"Loaded the doc from path: {pdf_path}")
     return doc
+
+
+def get_splitter():
+    child_splitter = RecursiveCharacterTextSplitter(chunk_size=250, chunk_overlap=50)
+
+    parent_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=2000, chunk_overlap=200, separators=["\n\n", "\n", " ", ""]
+    )
+
+    return child_splitter, parent_splitter
