@@ -11,5 +11,9 @@ COLLECTION_NAME = "child_docs"  # collection name for chroma_db
 
 LLM_MODEL = "deepseek-v4-flash"
 
+# Model used by DeepEval for metric computation (must support JSON structured output).
+# deepseek-chat handles this reliably; deepseek-v4-flash does not.
+EVAL_MODEL = "deepseek-v4-pro"
+
 # no of chunks to retrieve from the vectorstore for each query
 TOP_K = 2
