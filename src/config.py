@@ -1,6 +1,8 @@
 EMBEDDING_MODEL = "BAAI/bge-small-en-v1.5"
 EMBEDDING_MODEL_PATH = "./models"
 
+API_KEY = "DEEPSEEK_API_KEY"
+
 REDIS_URL = "redis://localhost:6379"
 REDIS_NAMESPACE = "parent_docs"
 
