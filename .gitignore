@@ -230,5 +230,5 @@ chroma_db/
 explorations/
 csv-results/
 
-# temp results
+# temp results of deepeval
 .deepeval/
