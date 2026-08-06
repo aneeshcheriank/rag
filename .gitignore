@@ -229,3 +229,6 @@ chroma_db/
 # explorations
 explorations/
 csv-results/
+
+# temp results
+.deepeval/
