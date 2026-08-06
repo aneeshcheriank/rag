@@ -11,6 +11,7 @@ from deepeval.metrics import (
     ContextualRecallMetric,
 )
 from deepeval.test_case import LLMTestCase
+from deepeval.errors import DeepEvalError
 
 from src.pipeline import rag
 from src import config
@@ -58,19 +59,9 @@ def run_deepeval(eval_data_path: str, output_path):
 
     logger.info(f"Running evaluation on items")
 
-     # Define metrics with acceptable threshold (0.0 to 1.0)
-    answer_relevance = AnswerRelevancyMetric(threshold=0, model=model)
-    faithfulness = FaithfulnessMetric(threshold=0.0, model=model)
-    context_precision = ContextualPrecisionMetric(threshold=0.0, model=model)
-    context_recall = ContextualRecallMetric(threshold=0.0, model=model)
-    score_metrics = {
-        "answer_relevance": answer_relevance,
-        "faithfulness": faithfulness,
-        "context_precision": context_precision,
-        "context_recall": context_recall
-    }
+    # 1. Run RAG pipeline on all items and build test cases
+    test_cases: list[LLMTestCase] = []
 
-    base_line = []
     for item in eval_data:
         user_query = item["question"]
         ground_truth = item["ground_truth"]
@@ -80,31 +71,57 @@ def run_deepeval(eval_data_path: str, output_path):
         actual_output = rag_out.get("response")
         retrieval_context = [doc.page_content for doc in rag_out.get("context", [])]
 
-        # Consturct the DeepEval LLMTestCase
-        test_case = LLMTestCase(
-            input=user_query,
-            actual_output=actual_output,
-            expected_output=expected_answer,
-            retrieval_context=retrieval_context
+        test_cases.append(
+            LLMTestCase(
+                input=user_query,
+                actual_output=actual_output,
+                expected_output=expected_answer,
+                retrieval_context=retrieval_context,
+            )
         )
 
-        scores = {}
-        scores["query"] = user_query
-        scores["actual_output"] = actual_output
-        scores["expected_output"] = expected_answer
-        scores["retrieval_context"] = retrieval_context
+    # 2. Define metrics
+    metric_factories = [
+        ("answer_relevance", lambda: AnswerRelevancyMetric(threshold=0, model=model)),
+        ("faithfulness", lambda: FaithfulnessMetric(threshold=0.0, model=model)),
+        ("context_precision", lambda: ContextualPrecisionMetric(threshold=0.0, model=model)),
+        ("context_recall", lambda: ContextualRecallMetric(threshold=0.0, model=model)),
+    ]
 
-        for metric_name, metric_fn in score_metrics.items():
-            metric_fn.measure(test_case)
-            score = metric_fn.score
+    # 3. Evaluate one test case at a time — catch JSON/model failures per item
+    records: list[dict] = []
 
-            scores[metric_name] = score
+    for i, tc in enumerate(test_cases):
+        record: dict = {
+            "query": tc.input,
+            "actual_output": tc.actual_output,
+            "expected_output": tc.expected_output,
+            "retrieval_context": "\n---\n".join(tc.retrieval_context),
+        }
 
-        base_line.append(scores)
-    df = pd.DataFrame(base_line)
+        for metric_name, metric_builder in metric_factories:
+            metric = metric_builder()
+            try:
+                metric.measure(tc)
+                record[metric_name] = metric.score
+            except DeepEvalError as e:
+                logger.warning(
+                    "Metric %s failed on item %d (%s…): %s",
+                    metric_name, i + 1, str(tc.input)[:60], e,
+                )
+                record[metric_name] = None
+            except Exception:
+                logger.exception(
+                    "Unexpected error — metric %s on item %d (%s…)",
+                    metric_name, i + 1, str(tc.input)[:60],
+                )
+                record[metric_name] = None
 
-    df.to_csv(output_path)
-    logger.info(f"output written to {output_path}")
+        records.append(record)
+
+    df = pd.DataFrame(records)
+    df.to_csv(output_path, index=False)
+    logger.info("Wrote %d rows to %s", len(df), output_path)
     return df
     
 
