@@ -43,7 +43,7 @@ def ground_truth_to_str(ground_truth):
 def run_deepeval(eval_data_path: str, output_path):
     # llm load
     model = DeepSeekModel(
-        model = config.LLM_MODEL,
+        model = config.EVAL_MODEL,
         api_key = API_KEY,
         temperature=0.0
     )
