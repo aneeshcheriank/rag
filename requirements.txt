@@ -6,7 +6,7 @@ langchain-huggingface
 langchain-deepseek
 langchain-chroma
 langchain-google-vertexai # ragas dependency
-lanchain-redis
+langchain-redis
 
 # other packages
 pypdf
@@ -26,3 +26,7 @@ black
 # Evaluation
 ragas
 datasets
+deepeval
+
+# testing
+pytest
