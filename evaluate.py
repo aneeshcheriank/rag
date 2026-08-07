@@ -39,8 +39,8 @@ load_dotenv(find_dotenv())
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
-EVAL_DATASET_PATH = "data/evaluation_dataset.json"
-OUTPUT_PATH = "baseline_vectorstore_results.csv"
+EVAL_DATASET_PATH = "data/evaluation_dataset_v2.json"
+OUTPUT_PATH = "baseline_vectorstore_results_v2.csv"
 
 
 # ---------------------------------------------------------------------------
