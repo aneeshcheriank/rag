@@ -12,7 +12,7 @@ def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
 
 
-def rag(question, chat_history=[], k=4):
+def rag(question, chat_history=[], k=8):
     llm = get_llm()
     vectorstore = get_vectorstore(k=k)
     prompt = rag_prompt
