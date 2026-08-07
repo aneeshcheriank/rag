@@ -20,6 +20,9 @@ pypi-json
 qdrant-client
 chromadb
 
+# bm25 (keyword search)
+rank_bm25 == 0.2.2
+
 # format
 black
 
