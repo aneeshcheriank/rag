@@ -16,4 +16,4 @@ LLM_MODEL = "deepseek-v4-flash"
 EVAL_MODEL = "deepseek-v4-pro"
 
 # no of chunks to retrieve from the vectorstore for each query
-TOP_K = 2
+TOP_K = 4
