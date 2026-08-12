@@ -4,3 +4,6 @@ install:
 
 format:
 	python -m black src/*.py *.py
+
+test:
+	python -m pytest tests
