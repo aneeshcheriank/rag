@@ -134,5 +134,6 @@ def aggregate_scores(df):
     print(df[sel_cols].median().to_string())
 
 if __name__ == "__main__":
-    results = run_deepeval(eval_data_path, "evaluation_results_ensemble.csv")
+    output_path = "./output/evaluation_results_ensemble.csv"
+    results = run_deepeval(eval_data_path, output_path)
     aggregate_scores(results)
