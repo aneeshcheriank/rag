@@ -160,9 +160,10 @@ def build_evaluator_llm():
     patched = instructor.from_openai(client, mode=instructor.Mode.JSON)
 
     # Neuter Ragas' broken patcher so llm_factory doesn't undo our fix.
+     # pylint: disable-next=protected-access
     _ragas_base._patch_client_for_provider = (
         lambda c, p: patched
-    )  # pylint: disable=protected-access
+    ) 
 
     return llm_factory(
         config.LLM_MODEL,
