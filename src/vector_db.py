@@ -3,12 +3,7 @@ from langchain_community.storage import RedisStore
 from langchain_classic.retrievers import ParentDocumentRetriever
 from langchain_classic.storage import create_kv_docstore
 
-from src.config import (
-    CHROMA_STORAGE, 
-    REDIS_URL, 
-    REDIS_NAMESPACE,
-    COLLECTION_NAME
-)
+from src.config import CHROMA_STORAGE, REDIS_URL, REDIS_NAMESPACE, COLLECTION_NAME
 from src.model import get_embeddings
 from src.data_process import get_splitter
 

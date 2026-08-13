@@ -83,7 +83,9 @@ class HybridParentRetriever(BaseRetriever):
     class Config:
         arbitrary_types_allowed = True
 
-    def _get_relevant_documents(self, query: str, *, run_manager=None) -> list[Document]:
+    def _get_relevant_documents(
+        self, query: str, *, run_manager=None
+    ) -> list[Document]:
         # 1. Get child docs from the hybrid retriever
         child_docs: list[Document] = self.child_retriever.invoke(query)
 

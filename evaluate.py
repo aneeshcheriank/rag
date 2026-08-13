@@ -150,9 +150,7 @@ def build_evaluator_llm():
         if n <= 1:
             return _raw_chat_create(**kwargs)
         response = _raw_chat_create(**kwargs)
-        extra_choices = [
-            _raw_chat_create(**kwargs).choices[0] for _ in range(n - 1)
-        ]
+        extra_choices = [_raw_chat_create(**kwargs).choices[0] for _ in range(n - 1)]
         response.choices = [response.choices[0]] + extra_choices
         return response
 
