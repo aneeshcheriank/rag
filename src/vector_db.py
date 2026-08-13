@@ -43,7 +43,7 @@ def parent_document_store(docs, clear_existing=True):
         logger.error("Failed to connect to Redis at %s: %s", REDIS_URL, e)
         raise RuntimeError(f"Could not connect to Redis docstore: {e}") from e
     except Exception as e:
-        logger.error("Unexpected error initializing Redis docstore: %s", eS)
+        logger.error("Unexpected error initializing Redis docstore: %s", e)
         raise RuntimeError(f"Docstore initialization failed: {e}") from e
 
     if clear_existing:
@@ -55,7 +55,7 @@ def parent_document_store(docs, clear_existing=True):
                 "Cleared existing Redis docstore at %s with namespace %s", REDIS_URL, REDIS_NAMESPACE
             )
         except Exception as e:
-            logger.error(f"Failed to clear Redis docstore: {e}")
+            logger.error("Failed to clear Redis docstore: %s", e)
             raise RuntimeError(f"Could not clear Redis docstore: {e}") from e
 
     # Build the ParentDocumentRetriever
