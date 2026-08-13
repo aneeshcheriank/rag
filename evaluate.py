@@ -50,7 +50,7 @@ OUTPUT_PATH = "./output/baseline_vectorstore_results_v2.csv"
 
 def load_eval_data(path: str) -> list[dict]:
     """Load the evaluation dataset from a JSON file."""
-    with open(path) as f:
+    with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -160,7 +160,9 @@ def build_evaluator_llm():
     patched = instructor.from_openai(client, mode=instructor.Mode.JSON)
 
     # Neuter Ragas' broken patcher so llm_factory doesn't undo our fix.
-    _ragas_base._patch_client_for_provider = lambda c, p: patched
+    _ragas_base._patch_client_for_provider = (
+        lambda c, p: patched
+    )  # pylint: disable=protected-access
 
     return llm_factory(
         config.LLM_MODEL,
