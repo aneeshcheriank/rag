@@ -21,9 +21,9 @@ def parent_document_store(docs, clear_existing=True):
     if clear_existing:
         if os.path.exists(CHROMA_STORAGE):
             shutil.rmtree(CHROMA_STORAGE)
-            logger.info(f"Cleared existing database at {CHROMA_STORAGE}")
+            logger.info("Cleared existing database at {CHROMA_STORAGE}")
 
-    logger.info(f"started embeddings")
+    logger.info("started embeddings")
 
     child_splitter, parent_splitter = get_splitter()
 
@@ -40,10 +40,10 @@ def parent_document_store(docs, clear_existing=True):
         redis_store = RedisStore(redis_url=REDIS_URL, namespace=REDIS_NAMESPACE)
         docstore = create_kv_docstore(redis_store)
     except (RedisConnectionError, RedisError) as e:
-        logger.error(f"Failed to connect to Redis at {REDIS_URL}: {e}")
+        logger.error("Failed to connect to Redis at %s: %s", REDIS_URL, e)
         raise RuntimeError(f"Could not connect to Redis docstore: {e}") from e
     except Exception as e:
-        logger.error(f"Unexpected error initializing Redis docstore: {e}")
+        logger.error("Unexpected error initializing Redis docstore: %s", eS)
         raise RuntimeError(f"Docstore initialization failed: {e}") from e
 
     if clear_existing:
@@ -52,7 +52,7 @@ def parent_document_store(docs, clear_existing=True):
             if keys:
                 redis_store.mdelete(keys)
             logger.info(
-                f"Cleared existing Redis docstore at {REDIS_URL} with namespace {REDIS_NAMESPACE}"
+                "Cleared existing Redis docstore at %s with namespace %s", REDIS_URL, REDIS_NAMESPACE
             )
         except Exception as e:
             logger.error(f"Failed to clear Redis docstore: {e}")

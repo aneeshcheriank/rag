@@ -20,7 +20,7 @@ def get_embeddings():
 
     if not os.path.exists(config.EMBEDDING_MODEL_PATH):
         logger.info(
-            f"downloading {config.EMBEDDING_MODEL} to {config.EMBEDDING_MODEL_PATH}"
+            "downloading %s to %s", config.EMBEDDING_MODEL, config.EMBEDDING_MODEL_PATH
         )
         model = SentenceTransformer(config.EMBEDDING_MODEL)
         model.save(config.EMBEDDING_MODEL_PATH)
