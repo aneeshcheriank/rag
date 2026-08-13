@@ -33,3 +33,6 @@ deepeval
 
 # testing
 pytest
+
+# linting
+lint
