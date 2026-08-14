@@ -14,7 +14,7 @@ def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
 
 
-def rag(question: str, chat_history:Sequence[BaseMessage]|None=None, k=8):
+def rag(question: str, chat_history: Sequence[BaseMessage] | None = None, k=8):
 
     # Guard against mutable default parameter issue
     chat_history = list(chat_history) if chat_history is not None else []
