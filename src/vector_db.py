@@ -52,7 +52,9 @@ def parent_document_store(docs, clear_existing=True):
             if keys:
                 redis_store.mdelete(keys)
             logger.info(
-                "Cleared existing Redis docstore at %s with namespace %s", REDIS_URL, REDIS_NAMESPACE
+                "Cleared existing Redis docstore at %s with namespace %s",
+                REDIS_URL,
+                REDIS_NAMESPACE,
             )
         except Exception as e:
             logger.error("Failed to clear Redis docstore: %s", e)
